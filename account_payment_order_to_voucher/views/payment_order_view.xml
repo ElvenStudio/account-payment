@@ -4,19 +4,32 @@
         <record id="view_payment_order_form" model="ir.ui.view">
             <field name="name">payment.order.form</field>
             <field name="model">payment.order</field>
-            <field name="inherit_id" ref="account_payment.view_payment_order_form"></field>
+            <field name="inherit_id" ref="account_payment.view_payment_order_form" />
             <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="voucher_ids" invisible="True" />
+                    <field name="has_payment_lines_to_pay" invisible="True" />
+                    <field name="has_vouchers" invisible="True" />
+                </field>
+
                 <div class=" oe_right oe_button_box" position="after">
                     <div class=" oe_right oe_button_box">
-                        <button class="oe_inline oe_stat_button oe_right" name="generate_vouchers" string="Create vouchers"
-                        type="object" attrs="{'invisible':['|',('state','!=','done'),('voucher_ids','!=',False)]}"
-                        icon="fa-pencil-square-o" widget="statinfo"/>
+                        <button name="show_vouchers"
+                                string="Show vouchers"
+                                type="object"
+                                class="oe_inline oe_stat_button oe_right"
+                                attrs="{'invisible':['|',('state','!=','done'),('has_vouchers','=',False)]}"
+                                icon="fa-bars"
+                                widget="statinfo" />
+                        <button name="generate_vouchers"
+                                string="Create vouchers"
+                                type="object"
+                                class="oe_inline oe_stat_button oe_right"
+                                attrs="{'invisible':['|',('state','!=','done'),('has_payment_lines_to_pay','=',False)]}"
+                                icon="fa-pencil-square-o"
+                                widget="statinfo" />
                     </div>
                 </div>
-                <field name="line_ids" position="after">
-                    <separator string="Vouchers"></separator>
-                    <field name="voucher_ids"></field>
-                </field>
             </field>
         </record>
 
