@@ -2,7 +2,7 @@
 # © 2016 Carlos Dauden <carlos.dauden@tecnativa.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
+from openerp import models, fields, api, _
 
 
 class PaymentReturnReason(models.Model):
@@ -10,7 +10,7 @@ class PaymentReturnReason(models.Model):
     _description = 'Payment return reason'
 
     code = fields.Char()
-    name = fields.Char(string='Reason', translate=True)
+    name = fields.Char(string=_('Reason'), translate=True)
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
