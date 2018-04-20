@@ -252,6 +252,20 @@ class PaymentReturn(models.Model):
         self.write({'state': 'draft'})
         return True
 
+    @api.multi
+    def action_show_return_move(self):
+        self.ensure_one()
+        ir_model_data = self.env['ir.model.data']
+        act_window = self.env['ir.actions.act_window']
+
+        action_res = act_window.for_xml_id('account', 'action_move_journal_line')
+        res_view = ir_model_data.get_object_reference('account', 'view_move_form')
+
+        action_res['views'] = [(res_view and res_view[1] or False, 'form')]
+        action_res['res_id'] = self.move_id.id
+        # action_res['domain'] = [('id', 'in', self.move_id.ids)]
+        return action_res
+
 
 class PaymentReturnLine(models.Model):
     _name = "payment.return.line"
@@ -418,3 +432,4 @@ class PaymentReturnLine(models.Model):
         """
         self.ensure_one()
         return []
+
