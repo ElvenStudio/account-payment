@@ -176,48 +176,78 @@ class PaymentReturn(models.Model):
         }
 
     @api.multi
+    def _get_move_line_credit_defaults(self, move, original_move_line, move_amount):
+        """
+        Prepare the default values for the credit move line
+        :param move: the account move
+        :param original_move_line: the original move line to use for default values
+        :param move_amount: the amount to use in the new move line
+        :return: Dictionary with the record values.
+        """
+        self.ensure_one()
+        return {
+            'debit': 0,
+            'credit': move_amount,
+            'account_id': self.journal_id.default_credit_account_id.id,
+        }
+
+    @api.multi
+    def _get_move_line_debit_defaults(self, move, original_move_line, move_amount):
+        """
+        Prepare the default values for the debit move line
+        :param move: the account move
+        :param original_move_line: the original move line to use for default values
+        :param move_amount: the amount to use in the new move line
+        :return: Dictionary with the record values.
+        """
+        self.ensure_one()
+        return {
+            'move_id': move.id,
+            'debit': move_amount,
+            'name': move.ref,
+            'credit': 0,
+        }
+
+    @api.multi
     def action_confirm(self):
         self.ensure_one()
         # Check for incomplete lines
         if self.line_ids.filtered(lambda x: not x.move_line_ids):
-            raise UserError(
-                _("You must input all moves references in the payment "
-                  "return."))
+            raise UserError(_(
+                "You must input all moves references in the payment "
+                "return."
+            ))
+
         invoices_returned = self.env['account.invoice']
         move_line_obj = self.env['account.move.line']
         move = self.env['account.move'].create(
             self._prepare_return_move_vals()
         )
+
         for return_line in self.line_ids:
-            lines2reconcile = return_line.move_line_ids.mapped(
-                'reconcile_id.line_id')
+            lines2reconcile = return_line.move_line_ids.mapped('reconcile_id.line_id')
             invoices_returned |= self._get_invoices(lines2reconcile)
+
             for move_line in return_line.move_line_ids:
                 move_amount = self._get_move_amount(return_line, move_line)
-                move_line2 = move_line.copy(
-                    default={
-                        'move_id': move.id,
-                        'debit': move_amount,
-                        'name': move.ref,
-                        'credit': 0,
-                    })
+                debit_defaults = self._get_move_line_debit_defaults(move, move_line, move_amount)
+                move_line2 = move_line.copy(default=debit_defaults)
                 lines2reconcile |= move_line2
-                move_line2.copy(
-                    default={
-                        'debit': 0,
-                        'credit': move_amount,
-                        'account_id':
-                            self.journal_id.default_credit_account_id.id,
-                    })
+
+                credit_defaults = self._get_move_line_credit_defaults(move, move_line, move_amount)
+                move_line2.copy(default=credit_defaults)
                 # Break old reconcile
                 move_line.reconcile_id.unlink()
+
             extra_lines_vals = return_line._prepare_extra_move_lines(move)
             for extra_line_vals in extra_lines_vals:
                 move_line_obj.create(extra_line_vals)
+
             # Make a new one with at least three moves
-            lines2reconcile.reconcile_partial()
-            return_line.write(
-                {'reconcile_id': move_line2.reconcile_partial_id.id})
+            if len(lines2reconcile) > 1:
+                lines2reconcile.reconcile_partial()
+                return_line.write({'reconcile_id': move_line2.reconcile_partial_id.id})
+
         # Mark invoice as payment refused
         invoices_returned.write(self._prepare_invoice_returned_vals())
         move.button_validate()

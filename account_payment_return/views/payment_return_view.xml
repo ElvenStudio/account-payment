@@ -12,7 +12,7 @@
                         <button name="button_match" string="Match" type="object" states="draft,imported" class="oe_highlight" />
                         <button name="action_cancel" string="Cancel" type="object" states="done" />
                         <button name="action_draft" string="Draft" type="object" states="cancelled" />
-                        <field name="state" widget="statusbar"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done" />
                     </header>
                     <sheet string="Payment return">
                         <div class="oe_title">
