@@ -98,6 +98,12 @@ class PaymentReturn(models.Model):
         track_visibility='onchange'
     )
 
+    @api.one
+    @api.onchange('date')
+    def onchange_date(self):
+        if self.date:
+            self.period_id = self.period_id.find(self.date)
+
     @api.multi
     @api.constrains('line_ids')
     def _check_duplicate_move_line(self):
@@ -325,7 +331,8 @@ class PaymentReturnLine(models.Model):
 
     move_line_ids = fields.Many2many(
         comodel_name='account.move.line',
-        string=_('Payment Reference')
+        string=_('Payment Reference'),
+        required=True
     )
 
     date = fields.Date(string=_('Return date'))
@@ -339,7 +346,8 @@ class PaymentReturnLine(models.Model):
     partner_id = fields.Many2one(
         comodel_name='res.partner',
         string=_('Customer'),
-        domain="[('customer', '=', True)]"
+        domain="[('customer', '=', True)]",
+        required=True
     )
 
     amount = fields.Float(

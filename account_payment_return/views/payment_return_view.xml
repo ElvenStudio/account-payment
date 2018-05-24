@@ -87,6 +87,33 @@
             </field>
         </record>
 
+        <record id="payment_return_search_view" model="ir.ui.view">
+            <field name="name">payment.return.search.view</field>
+            <field name="model">payment.return</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Search Payment Returns">
+                    <field name="name" />
+                    <field name="journal_id" />
+                    <field name="date"/>
+                    <field name="period_id"/>
+                    <!-- todo search by customer -->
+
+                    <filter string="Draft" domain="[('state','=','draft')]" help="Draft Returns"/>
+                    <filter string="Done" domain="[('state','=','done')]" help="Posted Returns"/>
+                    <separator />
+
+                    <group expand="0" string="Group By">
+                        <!-- todo group by customer -->
+                        <filter string="Journal" context="{'group_by':'journal_id'}"/>
+                        <filter string="Period" context="{'group_by':'period_id'}"/>
+                        <filter string="Status" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
         <record model="ir.actions.act_window" id="payment_return_action">
             <field name="name">Customer Payment Returns</field>
             <field name="res_model">payment.return</field>
