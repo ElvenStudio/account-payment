@@ -16,6 +16,7 @@
     "depends": [
         'mail',
         'account',
+        'account_voucher'
     ],
     'author': '7 i TRIA, '
               'Tecnativa, '
