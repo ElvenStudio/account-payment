@@ -35,7 +35,6 @@ history through it.
 Known issues / Roadmap
 ======================
 
-* Add a button to see the created move.
 * Allow to add a commission amount on each line.
 
 Bug Tracker
@@ -60,6 +59,8 @@ Contributors
 * Markus Schneider <markus.schneider@initos.com>
 * Sergio Teruel <sergio.teruel@tecnativa.com>
 * Carlos Dauden <carlos.dauden@tecnativa.com>
+* Domenico Stragapede <d.stragapede@elvenstudio.it>
+* Vincenzo Terzulli <v.terzulli@elvenstudio.it>
 
 Maintainer
 ----------

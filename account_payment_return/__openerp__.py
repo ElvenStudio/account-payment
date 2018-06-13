@@ -6,6 +6,7 @@
 # © 2015 Sergio Teruel <sergio.teruel@tecnativa.com>
 # © 2015 Pedro M. Baeza <pedro.baeza@tecnativa.com>
 # © 2016 Carlos Dauden <carlos.dauden@tecnativa.com>
+# © 2018 Domenico Stragapede <d.stragapede@elvenstudio.it>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {

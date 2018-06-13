@@ -2,10 +2,10 @@
 # © 2018 Domenico Stragapede <d.stragapede@elvenstudio.it>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models
+from openerp.osv import osv
 
 
-class AccountVoucher(models.Model):
+class AccountVoucher(osv.osv):
     _inherit = 'account.voucher'
 
     def recompute_voucher_lines(
@@ -22,38 +22,28 @@ class AccountVoucher(models.Model):
         if 'value' not in default or 'line_cr_ids' not in default['value']:
             return default
 
-        return_line_cls = self.pool.get('payment.return.line')
+        return_cls = self.pool.get('payment.return')
         move_line_cls = self.pool.get('account.move.line')
 
-        new_line_cr_ids = []
+        deleted_line_cr_ids = []
+        line_cr_by_move = {}
         for line in default['value']['line_cr_ids']:
-            add_new_line = True
+            if type(line) == tuple:
+                deleted_line_cr_ids.append(line)
+            else:
+                line_cr_by_move[line['move_line_id']] = line
 
-            # find the related move line
-            ids = [line['move_line_id']]
-            move_line = move_line_cls.browse(cr, uid, ids, context=context)
+        for move_line_id in line_cr_by_move.keys():
+            move_line = move_line_cls.browse(cr, uid, [move_line_id], context=context)
+            domain = [('move_id', '=', move_line.move_id.id)]
+            return_id = return_cls.search(cr, uid, domain, context=context)
+            if return_id:
+                reconciled_lines = move_line.reconcile_partial_id.line_partial_ids
+                lines_to_remove = reconciled_lines.filtered(lambda l: l.id != move_line_id)
+                for line in lines_to_remove:
+                    if line.id in line_cr_by_move:
+                        line_cr_by_move.pop(line.id)
 
-            # if the line is partially reconciled,
-            # check if is related to a payment return
-            if move_line.reconcile_partial_id:
-                reconcile_partial_id = move_line.reconcile_partial_id.id
-                domain = [('reconcile_id', '=', reconcile_partial_id)]
-                return_line_id = return_line_cls.search(cr, uid, domain, context=context)
-
-                if return_line_id:
-                    return_line = return_line_cls.browse(
-                        cr, uid, return_line_id, context=context)
-
-                    # if the move is partially reconciled with a return,
-                    # check if the move is into the return.
-                    # if not, then the move is already reconciled but
-                    # the method _remove_noise_in_o2m in account_voucher
-                    # does not intercept this line as noise.
-                    if move_line.move_id.id != return_line.return_id.move_id.id:
-                        add_new_line = False
-
-            if add_new_line:
-                new_line_cr_ids.append(line)
-
-        default['value']['line_cr_ids'] = new_line_cr_ids
+        line_cr_ids = [line_cr_by_move[move_id] for move_id in line_cr_by_move]
+        default['value']['line_cr_ids'] = deleted_line_cr_ids + line_cr_ids
         return default

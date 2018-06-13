@@ -4,6 +4,7 @@
 # © 2013 Pedro M. Baeza <pedro.baeza@tecnativa.com>
 # © 2014 Markus Schneider <markus.schneider@initos.com>
 # © 2016 Carlos Dauden <carlos.dauden@tecnativa.com>
+# © 2018 Domenico Stragapede <d.stragapede@elvenstudio.it>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import payment_return
