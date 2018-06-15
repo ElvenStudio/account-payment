@@ -39,7 +39,7 @@ class AccountVoucher(osv.osv):
             return_id = return_cls.search(cr, uid, domain, context=context)
             if return_id:
                 reconciled_lines = move_line.reconcile_partial_id.line_partial_ids
-                lines_to_remove = reconciled_lines.filtered(lambda l: l.id != move_line_id)
+                lines_to_remove = reconciled_lines.filtered(lambda l: l.id < move_line_id)
                 for line in lines_to_remove:
                     if line.id in line_cr_by_move:
                         line_cr_by_move.pop(line.id)

@@ -366,7 +366,8 @@ class PaymentReturnLine(models.Model):
     move_line_ids = fields.Many2many(
         comodel_name='account.move.line',
         string=_('Payment Reference'),
-        required=True
+        ondelete='restrict',
+        required=True,
     )
 
     date = fields.Date(string=_('Return date'))
