@@ -21,13 +21,40 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##############################################################################
 
-from openerp import models, fields
+from openerp import models, fields, api, _
 
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     payment_mode_id = fields.Many2one(
-        'payment.mode',
-        related='stored_invoice_id.payment_mode_id',
-        string="Payment Mode", store=True)
+        comodel_name='payment.mode',
+        compute='_compute_payment_mode_id',
+        inverse='_set_payment_mode_id',
+        string="Payment Mode",
+        store=True
+    )
+
+    @api.multi
+    @api.depends('stored_invoice_id')
+    def _compute_payment_mode_id(self):
+        for line in self:
+            if line.stored_invoice_id:
+                line.payment_mode_id = line.stored_invoice_id.payment_mode_id
+
+    @api.multi
+    def _set_payment_mode_id(self):
+        # dummy function, used to allow field write
+        pass
+
+    @api.model
+    def create(self, vals):
+        move_line = super(AccountMoveLine, self).create(vals)
+
+        # if the payment mode is set,
+        # create method will not store the value into the database
+        # then just write it to keep stored
+        if 'payment_mode_id' in vals:
+            move_line.write({'payment_mode_id': vals['payment_mode_id']})
+
+        return move_line
