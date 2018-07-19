@@ -77,6 +77,45 @@ class PaymentReturn(models.Model):
         }
     )
 
+    account_id = fields.Many2one(
+        comodel_name='account.account',
+        string=_('Account'),
+        readonly=True,
+        required=True,
+        states={'draft': [('readonly', False)]},
+        help=_('Use this account to register the payment return')
+    )
+
+    reconcile_mode = fields.Selection(
+        selection=[
+            ('auto-reconcile', _('Automatic reconcile')),
+            ('manual-return', _('Manual return'))
+        ],
+        default='auto-reconcile',
+        required=True,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        help=_(
+            'Choose how you want reopen the partner debit: \n'
+            ' - Automatic reconcile: specify for each partner '
+            'the list of payment returned. When you confirm the return, '
+            'it will automatically reconcile the payment. \n'
+            ' - Manual return: specify for each partner only the amount returned. \n'
+            'It will reopen the debt, but no reconciliation will be done.'
+        )
+    )
+
+    customer_debit_account_id = fields.Many2one(
+        comodel_name='account.account',
+        string=_('Account'),
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        help=_(
+            'Use this account to reopen the customer debt '
+            'when manual return mode is selected.'
+        )
+    )
+
     move_id = fields.Many2one(
         comodel_name='account.move',
         string=_('Entry Move'),
@@ -104,6 +143,12 @@ class PaymentReturn(models.Model):
     def onchange_date(self):
         if self.date:
             self.period_id = self.period_id.find(self.date)
+
+    @api.one
+    @api.onchange('journal_id')
+    def onchange_journal_id(self):
+        if self.journal_id:
+            self.account_id = self.journal_id.default_credit_account_id
 
     @api.multi
     @api.constrains('line_ids')
@@ -155,6 +200,14 @@ class PaymentReturn(models.Model):
     def _prepare_invoice_returned_cancel_vals(self):
         return {'returned_payment': False}
 
+    @api.model
+    def create(self, vals):
+        if 'account_id' not in vals:
+            journal = self.env['account.journal'].browse(vals['journal_id'])
+            vals['account_id'] = journal.default_credit_account_id.id
+
+        return super(PaymentReturn, self).create(vals)
+
     @api.multi
     def unlink(self):
         if self.filtered(lambda x: x.state == 'done'):
@@ -200,7 +253,7 @@ class PaymentReturn(models.Model):
         return {
             'move_id': move.id,
             'name': _('Payment return charge %s') % move.ref,
-            'account_id': self.journal_id.default_credit_account_id.id,
+            'account_id': self.account_id.id,
             'debit': 0,
             'credit': move_amount,
         }
@@ -215,9 +268,10 @@ class PaymentReturn(models.Model):
         :return: Dictionary with the record values.
         """
         self.ensure_one()
+        ref = original_move_line.ref if original_move_line else ''
         return {
             'move_id': move.id,
-            'name': _('Returned payment %s') % original_move_line.ref,
+            'name': _('Returned payment %s') % ref,
             'debit': move_amount,
             'credit': 0,
         }
@@ -227,7 +281,8 @@ class PaymentReturn(models.Model):
         self.ensure_one()
 
         # Check for incomplete lines
-        if self.line_ids.filtered(lambda x: not x.move_line_ids):
+        if self.reconcile_mode == 'auto-reconcile' and \
+           self.line_ids.filtered(lambda x: not x.move_line_ids):
             raise UserError(_(
                 "You must input all moves references in the payment "
                 "return."
@@ -239,26 +294,44 @@ class PaymentReturn(models.Model):
         invoices_returned = self.env['account.invoice']
         move_line_obj = self.env['account.move.line']
         for return_line in self.line_ids:
-            for move_line in return_line.move_line_ids:
-                lines2reconcile = move_line.reconcile_id.mapped('line_id')
-                lines2reconcile |= move_line.reconcile_partial_id.mapped('line_partial_ids')
-                invoices_returned |= self._get_invoices(lines2reconcile)
-
-                move_amount = self._get_move_amount(return_line, move_line)
-                debit_defaults = self._get_move_line_debit_defaults(move, move_line, move_amount)
-                move_line2 = move_line.copy(default=debit_defaults)
-                lines2reconcile |= move_line2
-
-                # Break old reconcile
-                move_line.reconcile_id.unlink()
-                move_line.reconcile_partial_id.unlink()
-
-                # create new reconciliation
-                if len(lines2reconcile) > 1:
-                    lines2reconcile.reconcile_partial()
-
             credit_defaults = self._get_move_line_credit_defaults(move, return_line.move_line_ids, return_line.amount)
-            return_line.move_line_ids[0].copy(default=credit_defaults)
+
+            if return_line.move_line_ids:
+                return_line.move_line_ids[0].copy(default=credit_defaults)
+
+                for move_line in return_line.move_line_ids:
+                    lines2reconcile = move_line.reconcile_id.mapped('line_id')
+                    lines2reconcile |= move_line.reconcile_partial_id.mapped('line_partial_ids')
+                    invoices_returned |= self._get_invoices(lines2reconcile)
+
+                    move_amount = self._get_move_amount(return_line, move_line)
+                    debit_defaults = self._get_move_line_debit_defaults(move, move_line, move_amount)
+
+                    move_line2 = move_line.copy(default=debit_defaults)
+                    lines2reconcile |= move_line2
+
+                    # Break old reconcile
+                    move_line.reconcile_id.unlink()
+                    move_line.reconcile_partial_id.unlink()
+
+                    # create new reconciliation
+                    if len(lines2reconcile) > 1:
+                        lines2reconcile.reconcile_partial()
+
+            else:
+                partner_id = return_line.partner_id.id
+                credit_defaults.update({'partner_id': partner_id})
+                move_line_obj.create(credit_defaults)
+
+                debit_defaults = self._get_move_line_debit_defaults(move, move_line_obj, return_line.amount)
+                debit_defaults.update(
+                    {
+                        'name': _('Returned payment %s') % return_line.reference,
+                        'account_id': self.customer_debit_account_id.id,
+                        'partner_id': partner_id
+                    }
+                )
+                move_line_obj.create(debit_defaults)
 
             extra_lines_vals = return_line._prepare_extra_move_lines(move)
             for extra_line_vals in extra_lines_vals:
@@ -328,8 +401,10 @@ class PaymentReturn(models.Model):
         ir_model_data = self.env['ir.model.data']
         act_window = self.env['ir.actions.act_window']
 
-        action_res = act_window.for_xml_id('account', 'action_move_journal_line')
-        res_view = ir_model_data.get_object_reference('account', 'view_move_form')
+        action_name = 'action_move_journal_line'
+        form_name = 'view_move_form'
+        action_res = act_window.for_xml_id('account', action_name)
+        res_view = ir_model_data.get_object_reference('account', form_name)
 
         action_res['views'] = [(res_view and res_view[1] or False, 'form')]
         action_res['res_id'] = self.move_id.id
@@ -346,6 +421,10 @@ class PaymentReturnLine(models.Model):
         string=_('Payment return'),
         required=True,
         ondelete='cascade'
+    )
+
+    return_reconcile_mode = fields.Selection(
+        related='return_id.reconcile_mode'
     )
 
     concept = fields.Char(
@@ -366,8 +445,7 @@ class PaymentReturnLine(models.Model):
     move_line_ids = fields.Many2many(
         comodel_name='account.move.line',
         string=_('Payment Reference'),
-        ondelete='restrict',
-        required=True,
+        ondelete='restrict'
     )
 
     date = fields.Date(string=_('Return date'))
