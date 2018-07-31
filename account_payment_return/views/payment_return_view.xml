@@ -49,7 +49,7 @@
                         </group>
 	                    <notebook colspan="4">
 	                        <page string="Lines">
-	                            <field name="line_ids" colspan="4" nolabel="1" widget="one2many_list" context="{'default_date': date, 'journal_id': journal_id}">
+	                            <field name="line_ids" colspan="4" nolabel="1" widget="one2many_list" context="{'return_id': id,'default_date': date, 'journal_id': journal_id}">
 	                                <tree string="Payment return lines" editable="top">
 	                                    <field name="return_reconcile_mode" invisible="1" />
 	                                    <field name="date" />

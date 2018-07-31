@@ -11,6 +11,9 @@ from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
 
+import logging
+_log = logging.getLogger(__name__)
+
 
 class PaymentReturn(models.Model):
     _name = "payment.return"
@@ -424,7 +427,11 @@ class PaymentReturnLine(models.Model):
     )
 
     return_reconcile_mode = fields.Selection(
-        related='return_id.reconcile_mode'
+        selection=[
+            ('auto-reconcile', _('Automatic reconcile')),
+            ('manual-return', _('Manual return'))
+        ],
+        compute='_get_return_reconcile_mode',
     )
 
     concept = fields.Char(
@@ -475,6 +482,13 @@ class PaymentReturnLine(models.Model):
         compute='_get_reconcile_ids',
         help=_("Reference to the reconcile object.")
     )
+
+    @api.one
+    @api.depends('return_id', 'return_id.reconcile_mode')
+    def _get_return_reconcile_mode(self):
+        return_id = self.return_id or self.env.context.get('return_id', False)
+        if return_id:
+            self.return_reconcile_mode = return_id.reconcile_mode
 
     @api.one
     @api.depends('return_id.move_id',
