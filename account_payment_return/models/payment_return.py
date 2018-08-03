@@ -272,12 +272,18 @@ class PaymentReturn(models.Model):
         """
         self.ensure_one()
         ref = original_move_line.ref if original_move_line else ''
-        return {
+
+        values = {
             'move_id': move.id,
             'name': _('Returned payment %s') % ref,
             'debit': move_amount,
             'credit': 0,
         }
+
+        if original_move_line.date_maturity:
+            values['date_maturity'] = original_move_line.date_maturity
+
+        return values
 
     @api.multi
     def action_confirm(self):
@@ -297,6 +303,7 @@ class PaymentReturn(models.Model):
         invoices_returned = self.env['account.invoice']
         move_line_obj = self.env['account.move.line']
         for return_line in self.line_ids:
+
             credit_defaults = self._get_move_line_credit_defaults(move, return_line.move_line_ids, return_line.amount)
 
             if return_line.move_line_ids:
@@ -309,6 +316,8 @@ class PaymentReturn(models.Model):
 
                     move_amount = self._get_move_amount(return_line, move_line)
                     debit_defaults = self._get_move_line_debit_defaults(move, move_line, move_amount)
+                    if return_line.date_maturity:
+                        debit_defaults['date_maturity'] = return_line.date_maturity
 
                     move_line2 = move_line.copy(default=debit_defaults)
                     lines2reconcile |= move_line2
@@ -331,7 +340,8 @@ class PaymentReturn(models.Model):
                     {
                         'name': _('Returned payment %s') % return_line.reference,
                         'account_id': self.customer_debit_account_id.id,
-                        'partner_id': partner_id
+                        'partner_id': partner_id,
+                        'date_maturity': return_line.date_maturity
                     }
                 )
                 move_line_obj.create(debit_defaults)
@@ -456,6 +466,8 @@ class PaymentReturnLine(models.Model):
     )
 
     date = fields.Date(string=_('Return date'))
+
+    date_maturity = fields.Date(string=_('Maturity date'))
 
     partner_name = fields.Char(
         string=_('Partner name'),

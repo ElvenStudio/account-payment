@@ -53,6 +53,7 @@
 	                                <tree string="Payment return lines" editable="top">
 	                                    <field name="return_reconcile_mode" invisible="1" />
 	                                    <field name="date" />
+	                                    <field name="date_maturity" />
 	                                    <field name="concept" />
 	                                    <field name="reason" />
 	                                    <field name="partner_name" invisible="1"/>
