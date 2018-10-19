@@ -6,9 +6,9 @@
             <field name="model">account.move.line</field>
             <field name="inherit_id" ref="account.view_move_line_tree"/>
             <field name="arch" type="xml">
-                <tree string="Journal Items" position="attributes">
-                    <attribute name="editable">0</attribute>
-                </tree>
+                <!--<tree string="Journal Items" position="attributes">-->
+                    <!--<attribute name="editable">0</attribute>-->
+                <!--</tree>-->
                 <field name="date_maturity" position="after">
                     <field name="maturity_residual" />
                 </field>
