@@ -28,7 +28,7 @@ msgid "Accounting Voucher"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:486
+#: code:addons/account_payment_return/models/payment_return.py:485
 #, python-format
 msgid "Amount"
 msgstr ""
@@ -41,6 +41,8 @@ msgstr ""
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:94
 #: code:addons/account_payment_return/models/payment_return.py:441
+#: selection:payment.return,reconcile_mode:0
+#: selection:payment.return.line,return_reconcile_mode:0
 #, python-format
 msgid "Automatic reconcile"
 msgstr ""
@@ -52,6 +54,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:75
+#: field:payment.return,journal_id:0
 #, python-format
 msgid "Bank journal"
 msgstr ""
@@ -75,6 +78,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:101
+#: help:payment.return,reconcile_mode:0
 #, python-format
 msgid "Choose how you want reopen the partner debit: \n"
 " - Automatic reconcile: specify for each partner the list of payment returned. When you confirm the return, it will automatically reconcile the payment. \n"
@@ -95,6 +99,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:448
+#: field:payment.return.line,concept:0
 #, python-format
 msgid "Concept"
 msgstr ""
@@ -119,7 +124,7 @@ msgid "Created on"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:480
+#: code:addons/account_payment_return/models/payment_return.py:479
 #, python-format
 msgid "Customer"
 msgstr ""
@@ -130,7 +135,6 @@ msgstr ""
 #: view:payment.return:account_payment_return.payment_return_tree_view
 msgid "Customer Payment Returns"
 msgstr ""
-
 
 #. module: account_payment_return
 #: help:payment.return,message_last_post:0
@@ -164,6 +168,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:124
+#: field:payment.return,move_id:0
 #, python-format
 msgid "Entry Move"
 msgstr ""
@@ -175,6 +180,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:57
+#: field:payment.return,period_id:0
 #, python-format
 msgid "Forced period"
 msgstr ""
@@ -212,13 +218,14 @@ msgid "Invoice"
 msgstr ""
 
 #. module: account_payment_return
+#: help:account.invoice,returned_payment:0
 #: code:addons/account_payment_return/models/account_invoice.py:14
 #, python-format
 msgid "Invoice has been included on a payment that has been returned later."
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:549
+#: code:addons/account_payment_return/models/payment_return.py:548
 #, python-format
 msgid "Invoice: %s"
 msgstr ""
@@ -236,6 +243,11 @@ msgstr ""
 #. module: account_payment_return
 #: view:payment.return:account_payment_return.payment_return_search_view
 msgid "Journal"
+msgstr ""
+
+#. module: account_payment_return
+#: model:ir.model,name:account_payment_return.model_account_move_line
+msgid "Journal Items"
 msgstr ""
 
 #. module: account_payment_return
@@ -282,6 +294,8 @@ msgstr ""
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:95
 #: code:addons/account_payment_return/models/payment_return.py:442
+#: selection:payment.return,reconcile_mode:0
+#: selection:payment.return.line,return_reconcile_mode:0
 #, python-format
 msgid "Manual return"
 msgstr ""
@@ -297,7 +311,7 @@ msgid "Match"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:470
+#: code:addons/account_payment_return/models/payment_return.py:469
 #: field:payment.return.line,date_maturity:0
 #, python-format
 msgid "Maturity date"
@@ -320,7 +334,7 @@ msgid "Move lines: %s"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:593
+#: code:addons/account_payment_return/models/payment_return.py:592
 #, python-format
 msgid "Move: %s"
 msgstr ""
@@ -331,7 +345,8 @@ msgid "Partner"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:473
+#: code:addons/account_payment_return/models/payment_return.py:472
+#: field:payment.return.line,partner_name:0
 #, python-format
 msgid "Partner name"
 msgstr ""
@@ -344,6 +359,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:464
+#: field:payment.return.line,move_line_ids:0
 #, python-format
 msgid "Payment Reference"
 msgstr ""
@@ -352,6 +368,7 @@ msgstr ""
 #: code:addons/account_payment_return/models/payment_return.py:434
 #: model:ir.model,name:account_payment_return.model_payment_return
 #: view:payment.return:account_payment_return.payment_return_form_view
+#: field:payment.return.line,return_id:0
 #, python-format
 msgid "Payment return"
 msgstr ""
@@ -374,6 +391,7 @@ msgid "Payment return reason"
 msgstr ""
 
 #. module: account_payment_return
+#: field:account.invoice,returned_payment:0
 #: code:addons/account_payment_return/models/account_invoice.py:13
 #, python-format
 msgid "Payment returned"
@@ -404,7 +422,7 @@ msgid "Reason"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:492
+#: code:addons/account_payment_return/models/payment_return.py:491
 #, python-format
 msgid "Reconcile"
 msgstr ""
@@ -429,7 +447,7 @@ msgid "Reference to match moves from related documents"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:495
+#: code:addons/account_payment_return/models/payment_return.py:494
 #: help:payment.return.line,reconcile_ids:0
 #, python-format
 msgid "Reference to the reconcile object."
@@ -443,13 +461,16 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:36
-#: code:addons/account_payment_return/models/payment_return.py:468
+#: code:addons/account_payment_return/models/payment_return.py:467
+#: field:payment.return,date:0
+#: field:payment.return.line,date:0
 #, python-format
 msgid "Return date"
 msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:454
+#: field:payment.return.line,reason:0
 #, python-format
 msgid "Return reason"
 msgstr ""
@@ -470,7 +491,8 @@ msgid "Returned Payment"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:487
+#: code:addons/account_payment_return/models/payment_return.py:486
+#: help:payment.return.line,amount:0
 #, python-format
 msgid "Returned amount. Can be different from the move amount"
 msgstr ""
@@ -480,11 +502,6 @@ msgstr ""
 #: code:addons/account_payment_return/models/payment_return.py:341
 #, python-format
 msgid "Returned payment %s"
-msgstr ""
-
-#. module: account_payment_return
-#: field:payment.return.line,concept:0
-msgid "Rif. file"
 msgstr ""
 
 #. module: account_payment_return
@@ -515,6 +532,7 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:37
+#: help:payment.return,date:0
 #, python-format
 msgid "This date will be used as the account entry date."
 msgstr ""
@@ -526,12 +544,14 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:89
+#: help:payment.return,account_id:0
 #, python-format
 msgid "Use this account to register the payment return"
 msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:116
+#: help:payment.return,customer_debit_account_id:0
 #, python-format
 msgid "Use this account to reopen the customer debt when manual return mode is selected."
 msgstr ""
@@ -550,6 +570,14 @@ msgstr ""
 #: code:addons/account_payment_return/models/payment_return.py:217
 #, python-format
 msgid "You can not remove a payment return if state is 'Done'"
+msgstr ""
+
+#. module: account_payment_return
+#: code:addons/account_payment_return/models/account_move_line.py:18
+#, python-format
+msgid "You cannot delete %s ! \n"
+"One or more payment returns are linked to it. Please cancel them before.\n"
+"Related payment returns: %s"
 msgstr ""
 
 #. module: account_payment_return
