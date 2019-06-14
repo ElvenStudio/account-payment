@@ -487,11 +487,27 @@ class PaymentReturnLine(models.Model):
         digits_compute=dp.get_precision('Account')
     )
 
+    amount_residual = fields.Float(
+        string=_('Amount residual'),
+        digits_compute=dp.get_precision('Account'),
+        compute='_compute_return_line_fields',
+        readonly=True
+    )
+
     reconcile_ids = fields.One2many(
         string=_('Reconcile'),
         comodel_name='account.move.reconcile',
-        compute='_get_reconcile_ids',
+        compute='_compute_return_line_fields',
         help=_("Reference to the reconcile object.")
+    )
+
+    state = fields.Selection(
+        selection=[
+            ('open', _('Open')),
+            ('paid', _('Paid'))
+        ],
+        compute='_compute_return_line_fields',
+        readonly=True
     )
 
     @api.one
@@ -505,16 +521,33 @@ class PaymentReturnLine(models.Model):
     @api.depends('return_id.move_id',
                  'return_id.move_id.line_id.reconcile_id',
                  'return_id.move_id.line_id.reconcile_partial_id')
-    def _get_reconcile_ids(self):
+    def _compute_return_line_fields(self):
+        amount_residual = self.amount
+        state = 'open'
         if self.return_id.move_id:
-            reconcile_ids = self.move_line_ids.mapped('reconcile_id')
-            reconcile_ids |= self.move_line_ids.mapped('reconcile_partial_id')
-            self.reconcile_ids = reconcile_ids
+            if self.move_line_ids:
+                # payment return from specified move lines
+                reconcile_ids = self.move_line_ids.mapped('reconcile_id')
+                reconcile_ids |= self.move_line_ids.mapped('reconcile_partial_id')
+                self.reconcile_ids = reconcile_ids
+                amount_residual = sum(-1 * move.amount_residual for move in self.move_line_ids)
+                state = 'open' if amount_residual > 0 else 'paid'
+            else:
+                # manual return, find its manual return move line
+                return_line_ids = self.return_id.move_id.line_id.filtered(
+                    lambda l: l.debit == self.amount and l.partner_id.id == self.partner_id.id)
+
+                if return_line_ids:
+                    amount_residual = sum(move.amount_residual for move in return_line_ids)
+                    state = 'open' if amount_residual > 0 else 'paid'
+
+        self.amount_residual = amount_residual
+        self.state = state
 
     @api.multi
     def _compute_amount(self):
         for line in self:
-            line.amount = sum([move.credit for move in line.move_line_ids])
+            line.amount = sum(move.credit for move in line.move_line_ids)
 
     @api.multi
     def _get_partner_from_move(self):

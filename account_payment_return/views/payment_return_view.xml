@@ -73,6 +73,8 @@
                                                    'readonly':[('return_reconcile_mode', '=', 'manual-return')]
                                                }" />
 	                                    <field name="amount" sum="total_amount" />
+	                                    <field name="amount_residual" sum="total_amount_residual" />
+	                                    <field name="state" />
 	                                </tree>
 	                            </field>
 	                        </page>
