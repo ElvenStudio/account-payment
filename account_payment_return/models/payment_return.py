@@ -10,6 +10,7 @@
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
+from openerp.tools.float_utils import float_compare
 
 import logging
 _log = logging.getLogger(__name__)
@@ -534,8 +535,11 @@ class PaymentReturnLine(models.Model):
                 state = 'open' if amount_residual > 0 else 'paid'
             else:
                 # manual return, find its manual return move line
+                account_digits = dp.get_precision('Account')(self._cr)[1]
                 return_line_ids = self.return_id.move_id.line_id.filtered(
-                    lambda l: l.debit == self.amount and l.partner_id.id == self.partner_id.id)
+                    lambda l: float_compare(l.debit, self.amount, precision_digits=account_digits) == 0
+                              and l.partner_id.id == self.partner_id.id
+                )
 
                 if return_line_ids:
                     amount_residual = sum(move.amount_residual for move in return_line_ids)
