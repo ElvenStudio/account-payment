@@ -4,17 +4,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: account-payment (8.0)\n"
+"Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-24 09:22+0000\n"
-"PO-Revision-Date: 2018-08-03 09:17+0000\n"
-"Last-Translator: OCA Transbot <transbot@odoo-community.org>\n"
-"Language-Team: Italian (http://www.transifex.com/oca/OCA-account-payment-8-0/language/it/)\n"
+"POT-Creation-Date: 2019-07-02 08:33+0000\n"
+"PO-Revision-Date: 2019-07-02 08:33+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: it\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: \n"
+
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:85
 #: code:addons/account_payment_return/models/payment_return.py:113
@@ -35,7 +35,6 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:491
-#: field:payment.return.line,amount_residual:0
 #, python-format
 msgid "Amount residual"
 msgstr ""
@@ -55,6 +54,11 @@ msgstr ""
 #. module: account_payment_return
 #: view:payment.return:account_payment_return.payment_return_search_view
 msgid "Automatically reconciled"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return,company_id:0
+msgid "Azienda"
 msgstr ""
 
 #. module: account_payment_return
@@ -90,6 +94,11 @@ msgid "Choose how you want reopen the partner debit: \n"
 msgstr ""
 
 #. module: account_payment_return
+#: field:payment.return.line,partner_id:0
+msgid "Cliente"
+msgstr ""
+
+#. module: account_payment_return
 #: field:payment.return.reason,code:0
 msgid "Code"
 msgstr ""
@@ -109,6 +118,12 @@ msgstr ""
 #. module: account_payment_return
 #: view:payment.return:account_payment_return.payment_return_form_view
 msgid "Confirm"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return,account_id:0
+#: field:payment.return,customer_debit_account_id:0
+msgid "Conto"
 msgstr ""
 
 #. module: account_payment_return
@@ -136,6 +151,17 @@ msgstr ""
 #: model:ir.ui.menu,name:account_payment_return.payment_return_menu
 #: view:payment.return:account_payment_return.payment_return_tree_view
 msgid "Customer Payment Returns"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return,date:0
+#: field:payment.return.line,date:0
+msgid "Data Insoluto"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,date_maturity:0
+msgid "Data scadenza"
 msgstr ""
 
 #. module: account_payment_return
@@ -186,6 +212,11 @@ msgid "Forced period"
 msgstr ""
 
 #. module: account_payment_return
+#: field:payment.return,period_id:0
+msgid "Forza Periodo"
+msgstr ""
+
+#. module: account_payment_return
 #: view:payment.return:account_payment_return.payment_return_search_view
 msgid "Group By"
 msgstr ""
@@ -210,6 +241,32 @@ msgstr ""
 #. module: account_payment_return
 #: selection:payment.return,state:0
 msgid "Imported"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,amount:0
+msgid "Importo"
+msgstr ""
+
+#. module: account_payment_return
+#: help:payment.return.line,amount:0
+msgid "Importo insoluto. Può essere diverso per ogni registrazione contabile."
+msgstr ""
+
+#. module: account_payment_return
+#: field:account.invoice,returned_payment:0
+msgid "Insoluti"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,return_id:0
+msgid "Insoluto"
+msgstr ""
+
+#. module: account_payment_return
+#: selection:payment.return,reconcile_mode:0
+#: selection:payment.return.line,return_reconcile_mode:0
+msgid "Insoluto manuale"
 msgstr ""
 
 #. module: account_payment_return
@@ -247,6 +304,11 @@ msgstr ""
 #. module: account_payment_return
 #: model:ir.model,name:account_payment_return.model_account_move_line
 msgid "Journal Items"
+msgstr ""
+
+#. module: account_payment_return
+#: help:account.invoice,returned_payment:0
+msgid "La fattura è inclusa in un pagamento che è diventato insoluto."
 msgstr ""
 
 #. module: account_payment_return
@@ -324,6 +386,16 @@ msgid "Messages and communication history"
 msgstr ""
 
 #. module: account_payment_return
+#: field:payment.return.reason,name:0
+msgid "Motivazione"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,reason:0
+msgid "Motivo Insoluto"
+msgstr ""
+
+#. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:602
 #, python-format
 msgid "Move lines: %s"
@@ -333,6 +405,11 @@ msgstr ""
 #: code:addons/account_payment_return/models/payment_return.py:625
 #, python-format
 msgid "Move: %s"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,partner_name:0
+msgid "Nome Partner"
 msgstr ""
 
 #. module: account_payment_return
@@ -412,6 +489,16 @@ msgid "Posted Returns"
 msgstr ""
 
 #. module: account_payment_return
+#: field:payment.return,state:0
+msgid "Provincia"
+msgstr ""
+
+#. module: account_payment_return
+#: help:payment.return,date:0
+msgid "Questa data può essere usata come data della registrazione contabile."
+msgstr ""
+
+#. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:449
 #: help:payment.return.line,concept:0
 #: help:payment.return.line,partner_name:0
@@ -455,6 +542,11 @@ msgstr ""
 #: help:payment.return.line,reconcile_ids:0
 #, python-format
 msgid "Reference to the reconcile object."
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return,move_id:0
+msgid "Registrazione contabile"
 msgstr ""
 
 #. module: account_payment_return
@@ -505,8 +597,48 @@ msgid "Returned payment %s"
 msgstr ""
 
 #. module: account_payment_return
+#: field:payment.return.line,reconcile_ids:0
+msgid "Riconciliazione"
+msgstr ""
+
+#. module: account_payment_return
+#: selection:payment.return,reconcile_mode:0
+#: selection:payment.return.line,return_reconcile_mode:0
+msgid "Riconciliazione automatica"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,concept:0
+msgid "Rif. file"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return,name:0
+#: field:payment.return.line,reference:0
+msgid "Riferimento"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return.line,move_line_ids:0
+msgid "Riferimento Pagamento"
+msgstr ""
+
+#. module: account_payment_return
+#: help:payment.return,reconcile_mode:0
+msgid "Scegli come riaprire il debito cliente: \n"
+" - Riconciliazione automatica: specifica per ogni cliente la lista degli insoluti. Quando confermi l'insoluto, riconcilierà automaticamente i pagamenti. \n"
+" - Insoluto manuale: specifica per ogni cliente solo l'importo insoluto. \n"
+"Riaprirà il debito, ma non verrà riconciliata nessuna registrazione."
+msgstr ""
+
+#. module: account_payment_return
 #: view:payment.return:account_payment_return.payment_return_search_view
 msgid "Search Payment Returns"
+msgstr ""
+
+#. module: account_payment_return
+#: field:payment.return,journal_id:0
+msgid "Sezionale"
 msgstr ""
 
 #. module: account_payment_return
@@ -516,7 +648,6 @@ msgstr ""
 
 #. module: account_payment_return
 #: code:addons/account_payment_return/models/payment_return.py:132
-#: field:payment.return.line,state:0
 #, python-format
 msgid "State"
 msgstr ""
@@ -540,6 +671,16 @@ msgstr ""
 #. module: account_payment_return
 #: field:payment.return,message_unread:0
 msgid "Unread Messages"
+msgstr ""
+
+#. module: account_payment_return
+#: help:payment.return,account_id:0
+msgid "Usa questo conto per registrare l'insoluto"
+msgstr ""
+
+#. module: account_payment_return
+#: help:payment.return,customer_debit_account_id:0
+msgid "Usa questo conto per riaprire il debito cliente quando la modalità insoluto manuale è selezionata."
 msgstr ""
 
 #. module: account_payment_return
@@ -587,10 +728,5 @@ msgstr ""
 #. module: account_payment_return
 #: view:payment.return:account_payment_return.payment_return_form_view
 msgid "total_amount"
-msgstr ""
-
-#. module: account_payment_return
-#: view:payment.return:account_payment_return.payment_return_form_view
-msgid "total_amount_residual"
 msgstr ""
 
